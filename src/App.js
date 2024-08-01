@@ -10,7 +10,8 @@ function App() {
         <div>
             <Router>
                 <Routes>
-                    <Route path='/:bearerToken?' element={<WorkFlowList />} />
+                    {/*<Route path='/:bearerToken?' element={<WorkFlowList />} />*/}
+                    <Route path='/' element={<WorkFlowList />} />
                     <Route path='/workflow/:id' element={<WorkFlow />} />
                     <Route path='/erorr_403' element={<Error403 />} />
                 </Routes>
