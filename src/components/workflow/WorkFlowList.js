@@ -13,10 +13,11 @@ import Myheader from '../header';
 import Headermenu from '../headermenu';
 import { displayNames } from './Names';
 import { useParams, useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
 const WorkFlowList = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
-    const { bearerToken } = useParams();
+    // const { bearerToken } = useParams();
     const [visible, setVisible] = useState(false);
     const [fields, setFields] = useState([]);
     const [selectedModule, setSelectedModule] = useState(null);
@@ -27,11 +28,11 @@ const WorkFlowList = () => {
         wf_module_related_to_product: null,
     });
     const [products, setproducts] = useState([]);
-    if (bearerToken) {
-        sessionStorage.setItem("uid", bearerToken);
-
-    }
-    var Token = sessionStorage.getItem("uid");
+    // if (bearerToken) {
+    //     sessionStorage.setItem("uid", bearerToken);
+    //
+    // }
+    var Token = Cookies.get('accessToken');
 
     if (Token == null) {
         navigate('/erorr_403');
@@ -61,7 +62,7 @@ const WorkFlowList = () => {
     }, [selectedModule]);
 
     const getFields = async () => {
-        const Token = sessionStorage.getItem("uid");
+        const Token = Cookies.get('accessToken');
         // const Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjoxLCJwaHBzZXJ2ZXIiOiJsb2NhbGhvc3QiLCJpYXQiOjE3MTk0MDcyODF9.Uwe2jSC0o5zmGYEduPWvUDUGNiYkdYSFImgcdvk_KyY';
         const getFieldsUrl = `${apiUrl}/api/worflow_rule/get_fields`;
         const result = await fetch(getFieldsUrl, {
@@ -83,7 +84,7 @@ const WorkFlowList = () => {
     }, []);
 
     const getworkflo = async () => {
-        const Token = sessionStorage.getItem("uid");
+        const Token = Cookies.get('accessToken');
         // const Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjoxLCJwaHBzZXJ2ZXIiOiJsb2NhbGhvc3QiLCJpYXQiOjE3MTk0MDcyODF9.Uwe2jSC0o5zmGYEduPWvUDUGNiYkdYSFImgcdvk_KyY';
         const getFieldsUrl = `${apiUrl}/api/worflow_rule/getworkflowlist`;
         const result = await fetch(getFieldsUrl, {
@@ -101,7 +102,7 @@ const WorkFlowList = () => {
 
 
     const saveworkflow = async ($workflow_data) => {
-        const Token = sessionStorage.getItem("uid");
+        const Token = Cookies.get('accessToken');
         // const apiKey = process.env.REACT_APP_MY_API_KEY;
         // const Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjoxLCJwaHBzZXJ2ZXIiOiJsb2NhbGhvc3QiLCJpYXQiOjE3MTk0MDcyODF9.Uwe2jSC0o5zmGYEduPWvUDUGNiYkdYSFImgcdvk_KyY';
         const getFieldsUrl = `${apiUrl}/api/worflow_rule/savewrokflow`;
@@ -159,12 +160,10 @@ const WorkFlowList = () => {
         saveworkflow(formData);
     };
 
-    console.log('products', products);
-
     return (
         <div>
             <Helmet>
-                <title>Vendor Quotation Request</title>
+                <title>DBI360 Workflow</title>
             </Helmet>
             <div className="page">
                 <div className="page-main">
