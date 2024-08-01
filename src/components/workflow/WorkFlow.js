@@ -14,6 +14,7 @@ import ReactFlow, {
 import Myheader from '../header';
 import Headermenu from '../headermenu';
 import CustomeDiamondNode from './CustomeDiamondNode';
+import Cookies from "js-cookie";
 
 const nodeTypes = {
     diamond: CustomeDiamondNode,
@@ -132,7 +133,7 @@ const WorkFlow = () => {
     useEffect(() => {
         const fetchWorkflowRules = async () => {
             try {
-                const token = sessionStorage.getItem("uid");
+                const Token = Cookies.get('accessToken');
                 const response = await fetch(`${apiUrl}/api/worflow_rule/getworkflowrules`, {
                     method: 'POST',
                     headers: {
@@ -161,7 +162,7 @@ const WorkFlow = () => {
 
     const saveWorkflowRules = useCallback(async () => {
         try {
-            const token = sessionStorage.getItem("uid");
+            const Token = Cookies.get('accessToken');
             const response = await fetch(`${apiUrl}/api/worflow_rule/saveworkflowrules`, {
                 method: 'POST',
                 headers: {
@@ -184,7 +185,7 @@ const WorkFlow = () => {
     useEffect(() => {
         const fetchModules = async () => {
             try {
-                const token = sessionStorage.getItem("uid");
+                const Token = Cookies.get('accessToken');
                 const response = await fetch(`${apiUrl}/api/worflow_rule/get_modules`, {
                     method: 'POST',
                     headers: {
@@ -207,7 +208,7 @@ const WorkFlow = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const token = sessionStorage.getItem("uid");
+                const Token = Cookies.get('accessToken');
                 const response = await fetch(`${apiUrl}/api/worflow_rule/get_product`, {
                     method: 'POST',
                     headers: {
@@ -233,7 +234,7 @@ const WorkFlow = () => {
         const fetchFields = async () => {
             if (selectedModule) {
                 try {
-                    const token = sessionStorage.getItem("uid");
+                    const Token = Cookies.get('accessToken');
                     const response = await fetch(`${apiUrl}/api/worflow_rule/get_fields`, {
                         method: 'POST',
                         headers: {
