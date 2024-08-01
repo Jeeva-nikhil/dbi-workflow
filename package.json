@@ -7,6 +7,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "bootstrap": "^5.3.3",
+    "dotenv": "^16.4.5",
     "primereact": "^10.7.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
@@ -18,9 +19,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "node generateEnv.js && react-scripts start",
+    "build": "node generateEnv.js && react-scripts build",
+    "test": "node generateEnv.js && react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

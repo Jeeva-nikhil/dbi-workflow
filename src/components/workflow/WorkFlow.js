@@ -19,7 +19,7 @@ const nodeTypes = {
     diamond: CustomeDiamondNode,
 };
 const WorkFlow = () => {
-
+    const apiUrl = process.env.REACT_APP_API_URL;
     const { id } = useParams();
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
@@ -133,7 +133,7 @@ const WorkFlow = () => {
         const fetchWorkflowRules = async () => {
             try {
                 const token = sessionStorage.getItem("uid");
-                const response = await fetch(`${process.env.REACT_APP_API_URL}api/worflow_rule/getworkflowrules`, {
+                const response = await fetch(`${apiUrl}/api/worflow_rule/getworkflowrules`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ const WorkFlow = () => {
     const saveWorkflowRules = useCallback(async () => {
         try {
             const token = sessionStorage.getItem("uid");
-            const response = await fetch(`${process.env.REACT_APP_API_URL}api/worflow_rule/saveworkflowrules`, {
+            const response = await fetch(`${apiUrl}/api/worflow_rule/saveworkflowrules`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -185,7 +185,7 @@ const WorkFlow = () => {
         const fetchModules = async () => {
             try {
                 const token = sessionStorage.getItem("uid");
-                const response = await fetch(`${process.env.REACT_APP_API_URL}api/worflow_rule/get_modules`, {
+                const response = await fetch(`${apiUrl}/api/worflow_rule/get_modules`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -208,7 +208,7 @@ const WorkFlow = () => {
         const fetchProducts = async () => {
             try {
                 const token = sessionStorage.getItem("uid");
-                const response = await fetch(`${process.env.REACT_APP_API_URL}api/worflow_rule/get_product`, {
+                const response = await fetch(`${apiUrl}/api/worflow_rule/get_product`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -234,7 +234,7 @@ const WorkFlow = () => {
             if (selectedModule) {
                 try {
                     const token = sessionStorage.getItem("uid");
-                    const response = await fetch(`${process.env.REACT_APP_API_URL}api/worflow_rule/get_fields`, {
+                    const response = await fetch(`${apiUrl}/api/worflow_rule/get_fields`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -578,7 +578,7 @@ const WorkFlow = () => {
                                                                     />
                                                                 </Form.Group>)}
 
-                                                            {formData.opennextaction && (
+                                                             {formData.opennextaction && (
                                                                 <>
                                                                     <Form.Group>
                                                                         <Form.Label>Next Action</Form.Label>
@@ -603,7 +603,7 @@ const WorkFlow = () => {
                                                                         />
                                                                     </Form.Group>
                                                                 </>
-                                                            )}
+                                                             )}
                                                             <div className="workflow-title text-center">
                                                                 <Button type="submit" className="mt-2" style={{ width: '100%' }}>
                                                                     Save
