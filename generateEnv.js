@@ -13,10 +13,9 @@ const envFileContent = envVariables.map(key => {
     if (value) {
         return `${key}=${value}`;
     } else {
-        console.warn(`Environment variable ${key} is not set.`);
         return '';
     }
 }).filter(Boolean).join('\n');
 
 fs.writeFileSync('.env', envFileContent);
-console.log('.env file created with the following content:\n', envFileContent);
+
