@@ -14,6 +14,7 @@ import Headermenu from '../headermenu';
 import { displayNames } from './Names';
 import { useParams, useNavigate } from "react-router-dom";
 const WorkFlowList = () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
     const { bearerToken } = useParams();
     const [visible, setVisible] = useState(false);
@@ -62,7 +63,7 @@ const WorkFlowList = () => {
     const getFields = async () => {
         const Token = sessionStorage.getItem("uid");
         // const Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjoxLCJwaHBzZXJ2ZXIiOiJsb2NhbGhvc3QiLCJpYXQiOjE3MTk0MDcyODF9.Uwe2jSC0o5zmGYEduPWvUDUGNiYkdYSFImgcdvk_KyY';
-        const getFieldsUrl = `${process.env.REACT_APP_API_URL}api/worflow_rule/get_fields`;
+        const getFieldsUrl = `${apiUrl}/api/worflow_rule/get_fields`;
         const result = await fetch(getFieldsUrl, {
             method: 'POST',
             headers: {
@@ -84,7 +85,7 @@ const WorkFlowList = () => {
     const getworkflo = async () => {
         const Token = sessionStorage.getItem("uid");
         // const Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjoxLCJwaHBzZXJ2ZXIiOiJsb2NhbGhvc3QiLCJpYXQiOjE3MTk0MDcyODF9.Uwe2jSC0o5zmGYEduPWvUDUGNiYkdYSFImgcdvk_KyY';
-        const getFieldsUrl = `${process.env.REACT_APP_API_URL}api/worflow_rule/getworkflowlist`;
+        const getFieldsUrl = `${apiUrl}/api/worflow_rule/getworkflowlist`;
         const result = await fetch(getFieldsUrl, {
             method: 'GET',
             headers: {
@@ -101,8 +102,9 @@ const WorkFlowList = () => {
 
     const saveworkflow = async ($workflow_data) => {
         const Token = sessionStorage.getItem("uid");
+        // const apiKey = process.env.REACT_APP_MY_API_KEY;
         // const Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjoxLCJwaHBzZXJ2ZXIiOiJsb2NhbGhvc3QiLCJpYXQiOjE3MTk0MDcyODF9.Uwe2jSC0o5zmGYEduPWvUDUGNiYkdYSFImgcdvk_KyY';
-        const getFieldsUrl = `${process.env.REACT_APP_API_URL}api/worflow_rule/savewrokflow`;
+        const getFieldsUrl = `${apiUrl}/api/worflow_rule/savewrokflow`;
         const result = await fetch(getFieldsUrl, {
             method: 'POST',
             headers: {
