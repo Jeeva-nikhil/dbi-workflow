@@ -610,6 +610,11 @@ span.p-input-icon-left.ml-3 {
   justify-content: center;
   align-items: center;
 }
-
+div#pr_id_3 {
+  background: #fbfbfb;
+  box-shadow: 2px 2px 4px 2px #dcdcdc;
+  padding: 22px;
+  border-radius: 7px;
+}
 
 
