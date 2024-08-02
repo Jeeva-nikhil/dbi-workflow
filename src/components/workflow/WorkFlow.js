@@ -138,7 +138,7 @@ const WorkFlow = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${Token}`,
                     },
                     body: JSON.stringify({ "wf_id": id }),
                 });
@@ -167,7 +167,7 @@ const WorkFlow = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${Token}`,
                 },
                 body: JSON.stringify({ "wf_id": id, "nodes": JSON.stringify(nodes), "edges": JSON.stringify(edges), "rules": JSON.stringify(ruledata) }),
             });
@@ -190,7 +190,7 @@ const WorkFlow = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${Token}`,
                     },
                     body: JSON.stringify({ "product": product })
                 });
@@ -213,15 +213,13 @@ const WorkFlow = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${Token}`,
                     },
                     body: JSON.stringify({ "wf_id": id })
                 });
 
                 const resultData = await response.json();
-                // console.log(resultData.workflow_data[0].wf_related_project);
                 setproduct(resultData.workflow_data[0].wf_related_project)
-                // setModules(resultData.workflow_data);
             } catch (error) {
                 console.error("Error fetching modules:", error);
             }
@@ -239,7 +237,7 @@ const WorkFlow = () => {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
+                            'Authorization': `Bearer ${Token}`,
                         },
                         body: JSON.stringify({ "modules": selectedModule }),
                     });
