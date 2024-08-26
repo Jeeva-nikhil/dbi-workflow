@@ -1,5 +1,11 @@
-import React, { useState,useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Menu, Dropdown, Badge, Avatar } from 'antd';
+import { FiBell, FiAlignLeft, FiBook, FiLogOut, FiSettings, FiUser } from "react-icons/fi";
+import Logo from "../assets/dbi.png";
+import Headermenu from '../components/headermenu'
+import HeaderMenu from "../components/headermenu";
+
 
 function Myheader() {
   const [showModal, setShowModal] = useState(false);
@@ -8,6 +14,7 @@ function Myheader() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
+
 
 
   useEffect(() => {
@@ -20,14 +27,13 @@ function Myheader() {
       }
     };
 
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  
+
   const toggleNotificationModal = () => {
     setShowNotificationModal(!showNotificationModal);
   };
@@ -35,331 +41,238 @@ function Myheader() {
   const toggleProfileModal = () => {
     setShowProfileModal(!showProfileModal);
   };
+  const notificationMenu = (
+      <div className="absolute -right-27 mt-7 flex h-90 w-75 flex-col rounded bg-white shadow sm:right-0 sm:w-80">
+      <div className="px-4 py-3">
+        <h5 className="font-medium">Notification</h5>
+      </div>
+        <ul className="flex max-h-80 flex-col custom-scroll overflow-y-auto">
+          {/* Start: Notification item 1 */}
+          <li>
+            <Link
+                className="flex flex-col gap-2.5 border-t border-stroke px-4 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+                to="#"
+            >
+              <p className="text-sm">
+                <span className="text-black dark:text-white">
+                  Edit your information in a swipe
+                </span>{" "}
+                Sint occaecat cupidatat non proident, sunt in culpa qui officia
+                deserunt mollit anim.
+              </p>
+
+              <p className="text-xs">12 May, 2025</p>
+            </Link>
+          </li>
+          {/* End: Notification item 1 */}
+
+          {/* Start: Notification item 2 */}
+          <li>
+            <Link
+                className="flex flex-col gap-2.5 border-t border-stroke px-4 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+                to="#"
+            >
+              <p className="text-sm">
+                <span className="text-black dark:text-white">
+                  It is a long established fact
+                </span>{" "}
+                that a reader will be distracted by the readable.
+              </p>
+
+              <p className="text-xs">24 Feb, 2025</p>
+            </Link>
+          </li>
+          {/* End: Notification item 2 */}
+
+          {/* Start: Notification item 3 */}
+          <li>
+            <Link
+                className="flex flex-col gap-2.5 border-t border-stroke px-4 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+                to="#"
+            >
+              <p className="text-sm">
+                <span className="text-black dark:text-white">
+                  There are many variations
+                </span>{" "}
+                of passages of Lorem Ipsum available, but the majority have
+                suffered
+              </p>
+
+              <p className="text-xs">04 Jan, 2025</p>
+            </Link>
+          </li>
+          {/* End: Notification item 3 */}
+
+          {/* Start: Notification item 4 */}
+          <li>
+            <Link
+                className="flex flex-col gap-2.5 border-t border-stroke px-4 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+                to="#"
+            >
+              <p className="text-sm">
+                <span className="text-black dark:text-white">
+                  There are many variations
+                </span>{" "}
+                of passages of Lorem Ipsum available, but the majority have
+                suffered
+              </p>
+
+              <p className="text-xs">01 Dec, 2024</p>
+            </Link>
+          </li>
+          {/* End: Notification item 4 */}
+
+          {/* Start: Notification item 5 */}
+          <li>
+            <Link
+                className="flex flex-col gap-2.5 border-t border-stroke px-4 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+                to="#"
+            >
+              <p className="text-sm">
+                <span className="text-black dark:text-white">
+                  There are many variations
+                </span>{" "}
+                of passages of Lorem Ipsum available, but the majority have
+                suffered
+              </p>
+
+              <p className="text-xs">01 Dec, 2024</p>
+            </Link>
+          </li>
+          {/* End: Notification item 5 */}
+
+          {/* Start: Notification item 6 */}
+          <li>
+            <Link
+                className="flex flex-col gap-2.5 border-t border-stroke px-4 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+                to="#"
+            >
+              <p className="text-sm">
+                <span className="text-black dark:text-white">
+                  There are many variations
+                </span>{" "}
+                of passages of Lorem Ipsum available, but the majority have
+                suffered
+              </p>
+
+              <p className="text-xs">01 Dec, 2024</p>
+            </Link>
+          </li>
+          {/* End: Notification item 6 */}
+        </ul>
+
+      </div>
+  );
+  // ===== User Dropdown Items Start =====
+  const userDropdown = [
+    {
+      to: "#",
+      icon: <FiUser />,
+      label: "My Profile",
+    },
+    {
+      to: "#",
+      icon: <FiBook />,
+      label: "My Contacts",
+    },
+    {
+      to: "#",
+      icon: <FiSettings />,
+      label: "Account Settings",
+    },
+    {
+      to: "#",
+      icon: <FiLogOut />,
+      label: "Logout",
+    },
+  ];
+// ===== User Dropdown Items End =====
+
+  const profileMenu = (
+      <Menu>
+        {/* ===== User Info Start ===== */}
+        <div className="py-2 px-4 border-b">
+          <h5 className="font-medium">Percy Kewshun</h5>
+          <span className="block text-xs">Senior Front-end Engineer</span>
+        </div>
+        {/* ===== User Info End ===== */}
+        {/* ===== Dropdown Items Start ===== */}
+        <ul className="flex flex-col gap-5 p-4">
+          {userDropdown.map((item) => (
+              <li key={item.label} className="text-nowrap">
+                <Link
+                    to={item.to}
+                    className="flex items-center gap-3 text-slate-700 duration-300 ease-in-out hover:text-primary"
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              </li>
+          ))}
+        </ul>
+        {/* ===== Dropdown Items End ===== */}
+
+      </Menu>
+  );
+
 
 
   return (
-    <>
-       <div className="header hor-header">
-        <div className="container-fluid main-container">
-          <div className="d-flex">
-            <Link
-              aria-label="Hide Sidebar"
-              className="app-sidebar__toggle"
-              data-bs-toggle="sidebar"
-              to="#"
-            />
-            <Link className="logo-horizontal" to="#">
-              <img
-                src="../assets/images/brand/logo.png"
-                className="header-brand-img desktop-logo"
-                alt="logo"
-              />
-              <img
-                src="../assets/images/brand/logo-3.png"
-                className="header-brand-img light-logo1"
-                alt="logo"
-              />
-            </Link>
-            <div className="main-header-center ms-3 d-none d-lg-block" style={{ marginTop: 17 }}>
-              <input
-                className="form-control"
-                placeholder="Search for results..."
-                type="search"
-              />
-              <button className="btn px-0 pt-2">
-                <i className="fe fe-search" aria-hidden="true" />
-              </button>
-            </div>
-            <div className="d-flex order-lg-2 ms-auto header-right-icons">
-              <div className="dropdown d-none">
-                <Link
-                  to="#"
-                  className="nav-link icon"
-                  data-bs-toggle="dropdown"
-                >
-                  <i className="fe fe-search" />
-                </Link>
-                <div className="dropdown-menu header-search dropdown-menu-start">
-                  <div className="input-group w-100 p-2">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search...."
-                    />
-                    <div className="input-group-text btn btn-primary">
-                      <i className="fe fe-search" aria-hidden="true" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <button
-                className="navbar-toggler navresponsive-toggler d-lg-none ms-auto"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent-4"
-                aria-controls="navbarSupportedContent-4"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-              >
-                <span className="navbar-toggler-icon fe fe-more-vertical" />
-              </button>
-              <div className="navbar navbar-collapse responsive-navbar p-0">
-                <div
-                  className="collapse navbar-collapse"
-                  id="navbarSupportedContent-4"
-                >
-                  <div className="d-flex order-lg-2">
-                    <div className="dropdown d-lg-none d-flex">
-                      <Link
-                        to="#"
-                        className="nav-link icon"
-                        data-bs-toggle="dropdown"
-                      >
-                        <i className="fe fe-search" />
-                      </Link>
-                      <div className="dropdown-menu header-search dropdown-menu-start">
-                        <div className="input-group w-100 p-2">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Search...."
-                          />
-                          <div className="input-group-text btn btn-primary">
-                            <i className="fa fa-search" aria-hidden="true" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                     {/* <div className="d-flex country">-109
-                      <Link className="nav-link icon theme-layout nav-link-bg layout-setting">
-                        <span className="dark-layout">
-                          <i className="fe fe-moon" />
-                        </span>
-                        <span className="light-layout">
-                          <i className="fe fe-sun" />
-                        </span>
-                      </Link>
-                    </div> */}
-                    <div ref={notificationRef} className={`dropdown d-flex notifications ${showNotificationModal ? 'show' : ''}`}>
-                      <div className="nav-link icon" onClick={toggleNotificationModal}>
-                        <i className="fe fe-bell" />
-                        <span className="pulse" />
-                      </div>
-                      {showNotificationModal && (
-                        <div style={{ position: "absolute", left: "-256px" }} className="dropdown-menu dropdown-menu-end dropdown-menu-arrow show">
-                          {/* Dropdown menu content */}
-                          <div className="drop-heading border-bottom">
-                            <div className="d-flex">
-                              <h6 className="mt-1 mb-0 fs-16 fw-semibold text-dark">
-                                Notifications
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="notifications-menu">
-                            {/* Your notification items */}
-                            {/* Example item */}
-                            <div className="dropdown-item d-flex">
-                              <div className="me-3 notifyimg bg-primary brround box-shadow-primary">
-                                <i className="fe fe-mail" />
-                              </div>
-                              <div className="mt-1 wd-80p">
-                                <h5 className="notification-label mb-1">
-                                  New Application received
-                                </h5>
-                                <span className="notification-subtext">
-                                  3 days ago
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="dropdown-divider m-0" />
-                          <Link
-                            to="#"
-                            className="dropdown-item text-center p-3 text-muted"
-                          >
-                            View all Notification
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                   
- {/* <div className="dropdown  d-flex message">-152
-                      <Link
-                        className="nav-link icon text-center"
-                        data-bs-toggle="dropdown"
-                      >
-                        <i className="fe fe-message-square" />
-                        <span className="pulse-danger" />
-                      </Link>
-                      <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <div className="drop-heading border-bottom">
-                          <div className="d-flex">
-                            <h6 className="mt-1 mb-0 fs-16 fw-semibold text-dark">
-                              You have 5 Messages
-                            </h6>
-                            <div className="ms-auto">
-                              <Link
-                                to="#"
-                                className="text-muted p-0 fs-12"
-                              >
-                                make all unread
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="message-menu message-menu-scroll">
-                          <Link className="dropdown-item d-flex" to="#">
-                            <span
-                              className="avatar avatar-md brround me-3 align-self-center cover-image"
-                              data-bs-image-src="../assets/images/users/1.jpg"
-                            />
-                            <div className="wd-90p">
-                              <div className="d-flex">
-                                <h5 className="mb-1">Peter Theil</h5>
-                                <small className="text-muted ms-auto text-end">
-                                  6:45 am
-                                </small>
-                              </div>
-                              <span>Commented on file Guest list....</span>
-                            </div>
-                          </Link>
-                          <Link className="dropdown-item d-flex" to="#">
-                            <span
-                              className="avatar avatar-md brround me-3 align-self-center cover-image"
-                              data-bs-image-src="../assets/images/users/15.jpg"
-                            />
-                            <div className="wd-90p">
-                              <div className="d-flex">
-                                <h5 className="mb-1">Abagael Luth</h5>
-                                <small className="text-muted ms-auto text-end">
-                                  10:35 am
-                                </small>
-                              </div>
-                              <span>New Meetup Started......</span>
-                            </div>
-                          </Link>
-                          <Link className="dropdown-item d-flex" to="#">
-                            <span
-                              className="avatar avatar-md brround me-3 align-self-center cover-image"
-                              data-bs-image-src="../assets/images/users/12.jpg"
-                            />
-                            <div className="wd-90p">
-                              <div className="d-flex">
-                                <h5 className="mb-1">Brizid Dawson</h5>
-                                <small className="text-muted ms-auto text-end">
-                                  2:17 pm
-                                </small>
-                              </div>
-                              <span>Brizid is in the Warehouse...</span>
-                            </div>
-                          </Link>
-                          <Link className="dropdown-item d-flex" to="#">
-                            <span
-                              className="avatar avatar-md brround me-3 align-self-center cover-image"
-                              data-bs-image-src="../assets/images/users/4.jpg"
-                            />
-                            <div className="wd-90p">
-                              <div className="d-flex">
-                                <h5 className="mb-1">Shannon Shaw</h5>
-                                <small className="text-muted ms-auto text-end">
-                                  7:55 pm
-                                </small>
-                              </div>
-                              <span>New Product Realease......</span>
-                            </div>
-                          </Link>
-                          <Link className="dropdown-item d-flex" to="#">
-                            <span
-                              className="avatar avatar-md brround me-3 align-self-center cover-image"
-                              data-bs-image-src="../assets/images/users/3.jpg"
-                            />
-                            <div className="wd-90p">
-                              <div className="d-flex">
-                                <h5 className="mb-1">Cherry Blossom</h5>
-                                <small className="text-muted ms-auto text-end">
-                                  7:55 pm
-                                </small>
-                              </div>
-                              <span>You have appointment on......</span>
-                            </div>
-                          </Link>
-                        </div>
-                        <div className="dropdown-divider m-0" />
-                        <Link
-                          to="#"
-                          className="dropdown-item text-center p-3 text-muted"
-                        >
-                          See all Messages
-                        </Link>
-                      </div>
-                    </div> */}
-                    {/* <div className="dropdown d-flex header-settings">
-                      <Link
-                        to="#;"
-                        className="nav-link icon"
-                        data-bs-toggle="sidebar-right"
-                        data-target=".sidebar-right"
-                      >
-                        <i className="fe fe-align-right" />
-                      </Link>
-                    </div> */}
+      <header className="sticky top-0 z-50 flex w-full items-center justify-between bg-white drop-shadow dark:bg-boxdark dark:drop-shadow-none py-2 px-4">
+        {/* Start of left section */}
+        <div className="lg:w-11/12 flex items-center">
+          {/* Start of mobile menu button */}
+          <button className="block lg:hidden text-xl p-2">
+            <FiAlignLeft className="text-white" />
+          </button>
+          {/* End of mobile menu button */}
 
-                    <div ref={profileRef} className={`dropdown d-flex profile-1 ${showProfileModal ? 'show' : ''}`}>
-                      <Link
-                        to="#"
-                        data-bs-toggle="dropdown"
-                        className="nav-link leading-none d-flex"
-                        onClick={toggleProfileModal}
-                      >
-                        <img
-                          src="../assets/images/users/21.jpg"
-                          alt="profile-user"
-                          className="avatar  profile-user brround cover-image"
-                        />
-                      </Link>
-                      {showProfileModal && (
-                        <div style={{ position: "absolute", left: "-129px" }} className="dropdown-menu dropdown-menu-end dropdown-menu-arrow show">
-                          <div className="drop-heading">
-                            <div className="text-center">
-                              <h5 className="text-dark mb-0 fs-14 fw-semibold">
-                                Percy Kewshun
-                              </h5>
-                              <small className="text-muted">Senior Admin</small>
-                            </div>
-                          </div>
-                          <div className="dropdown-divider m-0" />
-                          <Link className="dropdown-item" to="profile.html">
-                            <i className="dropdown-icon fe fe-user" /> Profile
-                          </Link>
-                          <Link className="dropdown-item" to="email-inbox.html">
-                            <i className="dropdown-icon fe fe-mail" /> Inbox
-                            <span className="badge bg-danger rounded-pill float-end">
-                              5
-                            </span>
-                          </Link>
-                          <Link className="dropdown-item" to="lockscreen.html">
-                            <i className="dropdown-icon fe fe-lock" /> Lockscreen
-                          </Link>
-                          <Link className="dropdown-item" to="login.html">
-                            <i className="dropdown-icon fe fe-alert-circle" />{" "}
-                            Sign out
-                          </Link>
-                        </div>
-                      )}
-                    </div>
+          {/* Start of logo */}
+          <Link className="hidden lg:block flex-shrink-0" to="/">
+            <img src={Logo} alt="Logo" className="inline-block w-10" />
+          </Link>
+          {/* End of logo */}
 
-                  </div>
-                </div>
-              </div>
-              {/* <div className="demo-icon nav-link icon">
-                <i className="fe fe-settings fa-spin  text_primary" />
-              </div> */}
-            </div>
-          </div>
+          <Headermenu />
         </div>
-      </div>
-    </>
-  
+        {/* End of left section */}
+
+        {/* Start of right section */}
+        <div className="flex items-center gap-6">
+          <Dropdown
+              ref={notificationRef}
+              overlay={notificationMenu}
+              trigger={['click']}
+              visible={showNotificationModal}
+          >
+
+            <Link to="#" className="nav-link icon relative" onClick={toggleNotificationModal} >
+                         <span className="absolute -top-1 right-0 z-1 h-2 w-2 rounded-full bg-red-600 inline">
+                            <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-red-600 opacity-75"></span>
+                         </span>
+              <FiBell />
+
+            </Link>
+
+          </Dropdown>
+          <Dropdown ref={profileRef}
+                    overlay={profileMenu}
+                    trigger={['click']}
+                    visible={showProfileModal}
+          >
+            <Link to="#" className="nav-link leading-none d-flex" onClick={toggleProfileModal}  >
+              <Avatar src="../assets/images/users/21.jpg" />
+            </Link>
+          </Dropdown>
+        </div>
+        {/* End of right section */}
+
+
+
+
+
+
+</header>
   );
 }
 
