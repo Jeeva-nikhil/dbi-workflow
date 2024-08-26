@@ -1,5 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
+import './index.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import WorkFlow from './components/workflow/WorkFlow';
 import WorkFlowList from './components/workflow/WorkFlowList';
