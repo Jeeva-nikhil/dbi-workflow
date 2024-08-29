@@ -1,8 +1,9 @@
-import React, {useCallback, useEffect, useState, useRef} from 'react';
-import { json, Link, useParams } from "react-router-dom";
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { Link, useParams } from "react-router-dom";
 import { Helmet } from 'react-helmet';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Input, Select, Checkbox, Row, Col, Card } from 'antd';
 import { displayNames } from './Names';
+import Footer from '../footer';
 import ReactFlow, {
     ReactFlowProvider,
     addEdge,
@@ -16,25 +17,29 @@ import Headermenu from '../headermenu';
 import CustomeDiamondNode from './CustomeDiamondNode';
 import Cookies from "js-cookie";
 
+const { Option } = Select;
+
 const nodeTypes = {
     diamond: CustomeDiamondNode,
 };
+
 const WorkFlow = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
     const { id } = useParams();
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedEdge, setSelectedEdge] = useState(null);
     const [formVisible, setFormVisible] = useState(false);
-    const [formData, setFormData] = useState({});
-    const [product, setproduct] = useState('');
+    const [formData, setFormData] = useState({ maxvalue: '' });
+    const [product, setProduct] = useState('');
     const [modules, setModules] = useState([]);
     const [fields, setFields] = useState([]);
     const [selectedModule, setSelectedModule] = useState(null);
     const [ruledata, setRuledata] = useState([]);
     const [showCondition, setShowCondition] = useState(false);
-    const [actionnode, setactionnode] = useState(false);
+    const [actionNode, setActionNode] = useState(false);
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+    const [formKey, setFormKey] = useState(0);
     const undoStack = useRef([]);
     const redoStack = useRef([]);
 
@@ -219,7 +224,7 @@ const WorkFlow = () => {
                 });
 
                 const resultData = await response.json();
-                setproduct(resultData.workflow_data[0].wf_related_project)
+                setProduct(resultData.workflow_data[0].wf_related_project);
             } catch (error) {
                 console.error("Error fetching modules:", error);
             }
@@ -263,20 +268,23 @@ const WorkFlow = () => {
             switch (newValue) {
                 case 'start':
                     label = 'Start';
+                    setActionNode(false);
                     break;
                 case 'conditioncheck':
                     label = 'Condition';
+                    setActionNode(false);
                     break;
                 case 'action':
                     label = 'Action';
-                    setactionnode(true);
+                    setActionNode(true);
                     break;
                 case 'end':
                     label = 'End';
+                    setActionNode(false);
                     break;
                 default:
                     label = '';
-                    setactionnode(false);
+                    setActionNode(false);
             }
             newFormData.label = label;
             setNodes(nds => nds.map(node => (node.id === selectedNode ? { ...node, data: { label } } : node)));
@@ -287,20 +295,27 @@ const WorkFlow = () => {
             setSelectedModule(value);
         }
     }, [formData, selectedNode]);
+    // const handleFormChange = useCallback(e => {
+    //     const { name, value, type, checked } = e.target;
+    //     const newValue = type === 'checkbox' ? checked : value;
+    //     setFormData(prevData => ({
+    //         ...prevData,
+    //         [name]: newValue,
+    //     }));
+    // }, [formData, selectedNode]);
 
-    const handleFormSubmit = useCallback(e => {
-        console.log(formData);
-        e.preventDefault();
-        let conditionlabel = `${formData.field} value between ${formData.minvalue}${formData.maxvalue > 0 ? ' to ' + formData.maxvalue : ''}`;
-        const label = showCondition ? conditionlabel : formData.state;
-        console.log(formData);
-        if(showCondition ){
-            if(formData.label !== 'start' && formData.label !== 'end' && formData.label !== 'action'){
+
+    const handleFormSubmit = useCallback(() => {
+        let conditionLabel = `${formData.field} value between ${formData.minvalue}${formData.maxvalue > 0 ? ' to ' + formData.maxvalue : ''}`;
+        const label = showCondition ? conditionLabel : formData.state;
+
+        if (showCondition) {
+            if (formData.label !== 'start' && formData.label !== 'end' && formData.label !== 'action') {
                 formData.label = 'condition';
                 formData.state = 'condition';
             }
         }
-        console.log(formData);
+
         setNodes(nds => nds.map(node => (node.id === selectedNode ? { ...node, data: { label } } : node)));
 
         const newEntry = { [selectedNode]: formData };
@@ -314,29 +329,35 @@ const WorkFlow = () => {
             } else {
                 updatedData.push(newEntry);
             }
-
             return updatedData;
         });
 
         setShowCondition(false);
         setFormVisible(false);
-    }, [formData, selectedNode, showCondition]);
+        saveWorkflowRules();
+    }, [formData, selectedNode, showCondition, saveWorkflowRules]);
 
-    useEffect(() => {
-        if (ruledata.length > 0) {
-            saveWorkflowRules();
-        }
-    }, [ruledata, saveWorkflowRules]);
-
+ 
     const handleNodeClick = useCallback((_, node) => {
+        if(node.data.label==="action")
+        {
+            setActionNode(true)
+        }
+        else
+        {
+            setActionNode(false)
+        }
+        
         setSelectedNode(node.id);
         setFormVisible(true);
         setShowCondition(node.type === 'diamond');
-        setFormData(getNodeValueById(node.id) || {});
-        setSelectedModule(getNodeValueById(node.id)?.table1 || null);
+        const nodeData = getNodeValueById(node.id);
+        setFormData(nodeData || {});
+        setSelectedModule(nodeData?.table || null);
+        setFormKey(prevKey => prevKey + 1); 
     }, [ruledata]);
 
-    const getNodeValueById = useCallback(id => ruledata.find(node => node[id])?.[id] || null, [ruledata]);
+    const getNodeValueById = useCallback(id => ruledata.find(node => node[id])?.[id] || {}, [ruledata]);
 
     const deleteNode = useCallback(() => {
         if (selectedNode) {
@@ -390,268 +411,328 @@ const WorkFlow = () => {
         }
     }, [nodes, edges]);
 
+    // console.log('fomdata', formData);
+
+    useEffect(() => {
+        console.log('Form Data Updated', formData);
+    }, [formData]);
+
+
     return (
         <div>
-            <Helmet>
-                <title>Workflow</title>
-            </Helmet>
-            <div className="page">
-                <div className="page-main">
-                    <div className="main-content hor-content mt-0">
-                        <Myheader />
-                        <Headermenu />
-                        <div className="side-app">
-                            <div className="main-container container-fluid">
-                                <div className="page-header my-0">
-                                    <ol className="breadcrumb">
-                                        <li className="breadcrumb-item">
-                                            <Link to={'/'}> Workflow </Link>
-                                        </li>
-                                        <li className="breadcrumb-item active" aria-current="page">
-                                            View
-                                        </li>
-                                    </ol>
-                                </div>
-                                <div className="workflow-title " style={{ marginBottom: 10, textAlign: 'right' }}>
-                                    <Button onClick={addNode} className="mt-2" style={{ marginRight: 10 }}>
-                                        {nodes.length > 0 ? ('Add a step') : ('Start')}
-                                    </Button>
-                                    <Button onClick={addDiamondNode} className="mt-2" style={{ marginRight: 10 }}>
-                                        Add a conditional step
-                                    </Button>
-                                    <Button onClick={deleteNode} className="mt-2" style={{ marginRight: 10 }}>
-                                        Delete a step
-                                    </Button>
-                                    <Button onClick={deleteEdge} className="mt-2" style={{ marginRight: 10 }}>
-                                        Delete Connection
-                                    </Button>
-                                    <Button onClick={undo} className="mt-2" style={{ marginRight: 10 }}>
-                                        Undo
-                                    </Button>
-                                    <Button onClick={redo} className="mt-2">
-                                        Redo
-                                    </Button>
-                                </div>
-                                <div className="row mb-5">
-                                    <div className="col-md-3">
-                                        <div className="card h-100">
-                                            <div className="card-body">
-                                                {formVisible && (
-                                                    <div className="workflow-details">
-                                                        <div className="workflow-title text-center">
-                                                            <h5 className="card-title">Define Rules for selected step</h5>
-                                                        </div>
-                                                        <Form onSubmit={handleFormSubmit} className="mt-3">
-                                                            <Form.Group>
-                                                                <Form.Label>State</Form.Label>
-                                                                <Form.Control
-                                                                    as="select"
-                                                                    name="state"
-                                                                    value={showCondition ? 'conditioncheck' : formData.state || ''}
-                                                                    onChange={handleFormChange}
-                                                                >
-                                                                    {showCondition ? (
-                                                                        <option value="conditioncheck">Condition check</option>
-                                                                    ) : (
-                                                                        <>
-                                                                            <option value="">Select State</option>
-                                                                            <option value="start">Start</option>
-                                                                            <option value="action">Action</option>
-                                                                            <option value="end">End</option>
-                                                                        </>
-                                                                    )}
-                                                                </Form.Control>
-                                                            </Form.Group>
-
-                                                            {formData.state === 'action' && (
-                                                                <>
-                                                                    <Form.Group>
-                                                                        <Form.Label>Choose modules</Form.Label>
-                                                                        <Form.Control
-                                                                            as="select"
-                                                                            name="updatemodules"
-                                                                            value={formData.updatemodules || ''}
-                                                                            onChange={handleFormChange}
-                                                                        >
-                                                                            <option value="">Select modules</option>
-                                                                            {modules.map((table, index) => (
-                                                                                displayNames[table.TABLE_NAME] ? (
-                                                                                    <option key={index} value={table.TABLE_NAME}>
-                                                                                        {displayNames[table.TABLE_NAME]}
-                                                                                    </option>
-                                                                                ) : null
-                                                                            ))}
-                                                                        </Form.Control>
-                                                                    </Form.Group>
-                                                                    <Form.Group>
-                                                                        <Form.Label>Choose Field</Form.Label>
-                                                                        <Form.Control
-                                                                            as="select"
-                                                                            name="updatefiled"
-                                                                            value={formData.updatefiled || ''}
-                                                                            onChange={handleFormChange}
-                                                                        >
-                                                                            <option value="">Update Field</option>
-                                                                            {fields.map((field, index) => (
-                                                                                <option key={index} value={field.COLUMN_NAME}>
-                                                                                    {field.COLUMN_NAME}
-                                                                                </option>
-                                                                            ))}
-                                                                        </Form.Control>
-                                                                    </Form.Group>
-                                                                    <Form.Group>
-                                                                        <Form.Label>Update Value</Form.Label>
-                                                                        <Form.Control
-                                                                            type="text"
-                                                                            name="value"
-                                                                            value={formData.value || ''}
-                                                                            onChange={handleFormChange}
-                                                                        />
-                                                                    </Form.Group>
-                                                                </>
-                                                            )}
-                                                            {showCondition && (
-                                                                <div className="card">
-                                                                    <Form.Group>
-                                                                        <Form.Label>Choose modules</Form.Label>
-                                                                        <Form.Control
-                                                                            as="select"
-                                                                            name="table"
-                                                                            value={formData.table || ''}
-                                                                            onChange={handleFormChange}
-                                                                        >
-                                                                            <option value="">Select modules</option>
-                                                                            {modules.map((table, index) => (
-                                                                                displayNames[table.TABLE_NAME] ? (
-                                                                                    <option key={index} value={table.TABLE_NAME}>
-                                                                                        {displayNames[table.TABLE_NAME]}
-                                                                                    </option>
-                                                                                ) : null
-                                                                            ))}
-                                                                        </Form.Control>
-                                                                    </Form.Group>
-                                                                    <Form.Group>
-                                                                        <Form.Label>Choose field</Form.Label>
-                                                                        <Form.Control
-                                                                            as="select"
-                                                                            name="field"
-                                                                            value={formData.field || ''}
-                                                                            onChange={handleFormChange}
-                                                                        >
-                                                                            <option value="">Select field</option>
-                                                                            {fields.map((field, index) => (
-                                                                                <option key={index} value={field.COLUMN_NAME}>
-                                                                                    {field.COLUMN_NAME}
-                                                                                </option>
-                                                                            ))}
-                                                                        </Form.Control>
-                                                                    </Form.Group>
-                                                                    <Form.Group>
-                                                                        <Form.Label>Minimum Value</Form.Label>
-                                                                        <Form.Control
-                                                                            type="text"
-                                                                            name="minvalue"
-                                                                            value={formData.minvalue || ''}
-                                                                            onChange={handleFormChange}
-                                                                        />
-                                                                    </Form.Group>
-                                                                    <Form.Group>
-                                                                        <Form.Label>Maximum Value</Form.Label>
-                                                                        <Form.Control
-                                                                            type="text"
-                                                                            name="maxvalue"
-                                                                            value={formData.maxvalue || ''}
-                                                                            onChange={handleFormChange}
-                                                                        />
-                                                                    </Form.Group>
-                                                                </div>
-                                                            )}
-                                                            {actionnode && (
-                                                                <Form.Group>
-                                                                    <Form.Check
-                                                                        type="checkbox"
-                                                                        label="Add Next Action"
-                                                                        name="opennextaction"
-                                                                        checked={formData.opennextaction || false}
-                                                                        onChange={handleFormChange}
-                                                                    />
-                                                                </Form.Group>)}
-
-                                                             {formData.opennextaction && (
-                                                                <>
-                                                                    <Form.Group>
-                                                                        <Form.Label>Next Action</Form.Label>
-                                                                        <Form.Control
-                                                                            as="select"
-                                                                            name="nextAction"
-                                                                            value={formData.nextAction || ''}
-                                                                            onChange={handleFormChange}
-                                                                        >
-                                                                            <option value="">Select State</option>
-                                                                            <option value="approval_sent_stage">Add Approval stage</option>
-                                                                            <option value="send_email_stage">Add Communication Email</option>
-                                                                        </Form.Control>
-                                                                    </Form.Group>
-                                                                    <Form.Group>
-                                                                        <Form.Label>Approval send to</Form.Label>
-                                                                        <Form.Control
-                                                                            type="text"
-                                                                            name="sendto"
-                                                                            value={formData.sendto || ''}
-                                                                            onChange={handleFormChange}
-                                                                        />
-                                                                    </Form.Group>
-                                                                </>
-                                                             )}
-                                                            <div className="workflow-title text-center">
-                                                                <Button type="submit" className="mt-2" style={{ width: '100%' }}>
-                                                                    Save
-                                                                </Button>
-                                                            </div>
-                                                        </Form>
-                                                    </div>
-                                                )}
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-9">
-                                        <div className="card h-100">
-                                            <div className="card-body">
-                                                <div className="workflow-editor">
-                                                    <div style={{ height: 600 }}>
-                                                        <ReactFlowProvider>
-                                                            <ReactFlow
-                                                                nodes={nodes}
-                                                                edges={edges}
-                                                                onNodesChange={onNodesChange}
-                                                                onEdgesChange={onEdgesChange}
-                                                                onConnect={onConnect}
-                                                                nodeTypes={nodeTypes}
-                                                                onNodeClick={handleNodeClick}
-                                                                onEdgeClick={onEdgeClick}
-                                                                onConnectEnd={onConnectEnd}
-                                                                onPaneClick={handlePaneClick}
-                                                            >
-                                                                <Background variant="dots" gap={12} size={1} />
-                                                                <Controls />
-                                                            </ReactFlow>
-                                                        </ReactFlowProvider>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <div className="min-h-screen bg-gray-100">
+                <Helmet>
+                    <title>DBI360 Workflow</title>
+                </Helmet>
+                <div className="flex flex-col min-h-screen">
+                    <Myheader />
+                    <div className="flex-grow p-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-2xl font-semibold">Workflow</h2>
+                            <ol className="breadcrumb flex gap-2 text-sm">
+                                <li className="breadcrumb-item">Workflow /</li>
+                                <li className="breadcrumb-item text-blue-500">Workflow View</li>
+                            </ol>
                         </div>
+                        <main className="bg-white rounded shadow p-4">
+                            <div className="workflow-title " style={{ marginBottom: 10, textAlign: 'right' }}>
+                                <Button onClick={addNode} type="primary" style={{ marginRight: 10 }}>
+                                    {nodes.length > 0 ? ('Add a step') : ('Start')}
+                                </Button>
+                                <Button onClick={addDiamondNode} type="primary" style={{ marginRight: 10 }}>
+                                    Add a conditional step
+                                </Button>
+                                <Button onClick={deleteNode} type="primary" style={{ marginRight: 10 }}>
+                                    Delete a step
+                                </Button>
+                                <Button onClick={deleteEdge} type="primary" style={{ marginRight: 10 }}>
+                                    Delete Connection
+                                </Button>
+                                <Button onClick={undo} type="primary" style={{ marginRight: 10 }}>
+                                    Undo
+                                </Button>
+                                <Button onClick={redo} type="primary">
+                                    Redo
+                                </Button>
+                            </div>
+                            <Row gutter={16} className="mb-5">
+                                <Col xs={24} md={8}>
+                                    <Card className="h-100">
+                                        {formVisible && (
+                                            <div className="workflow-details">
+                                                <div className="workflow-title text-center">
+                                                    <h5 className="card-title">Define Rules for selected step</h5>
+                                                </div>
+                                                <Form
+                                                    // onFinish={handleFormSubmit}
+                                                    // layout="vertical"
+                                                    // className="mt-3"
+                                                    key={formKey} 
+                                                    initialValues={formData}  // Set initial form values
+                                                    onFinish={handleFormSubmit}
+                                                    layout="vertical"
+                                                    className="mt-3"
+                                                >
+                                                    <Form.Item
+                                                        label="State"
+                                                        name="state"
+                                                    >
+                                                        <Select
+                                                            value={showCondition ? 'conditioncheck' : formData.state || ''}
+                                                            onChange={(value) =>
+                                                                handleFormChange({
+                                                                    target: { name: 'state', value },
+                                                                })
+                                                            }
+                                                        >
+                                                            {showCondition ? (
+                                                                <Option value="conditioncheck">Condition check</Option>
+                                                            ) : (
+                                                                <>
+                                                                    <Option value="start">Start</Option>
+                                                                    <Option value="action">Action</Option>
+                                                                    <Option value="end">End</Option>
+                                                                </>
+                                                            )}
+                                                        </Select>
+                                                    </Form.Item>
+
+                                                    {formData.state === 'action' && (
+                                                        <>
+                                                            <Form.Item
+                                                                label="Choose modules"
+                                                                name="updatemodules"
+                                                            >
+                                                                <Select
+                                                                    value={formData.updatemodules || ''}
+                                                                    onChange={(value) =>
+                                                                        handleFormChange({
+                                                                            target: { name: 'updatemodules', value },
+                                                                        })
+                                                                    }
+                                                                >
+                                                                    <Option value="">Select modules</Option>
+                                                                    {modules.map((table, index) => (
+                                                                        displayNames[table.TABLE_NAME] ? (
+                                                                            <Option key={index} value={table.TABLE_NAME}>
+                                                                                {displayNames[table.TABLE_NAME]}
+                                                                            </Option>
+                                                                        ) : null
+                                                                    ))}
+                                                                </Select>
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label="Choose Field"
+                                                                name="updatefiled"
+                                                            >
+                                                                <Select
+                                                                    value={formData.updatefiled || ''}
+                                                                    onChange={(value) =>
+                                                                        handleFormChange({
+                                                                            target: { name: 'updatefiled', value },
+                                                                        })
+                                                                    }
+                                                                >
+                                                                    <Option value="">Update Field</Option>
+                                                                    {fields.map((field, index) => (
+                                                                        <Option key={index} value={field.COLUMN_NAME}>
+                                                                            {field.COLUMN_NAME}
+                                                                        </Option>
+                                                                    ))}
+                                                                </Select>
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label="Update Value"
+                                                                name="value"
+                                                            >
+                                                                <Input
+                                                                    value={formData.value || ''}
+                                                                    onChange={(e) =>
+                                                                        handleFormChange({
+                                                                            target: { name: 'value', value: e.target.value },
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </Form.Item>
+                                                        </>
+                                                    )}
+
+                                                    {showCondition && (
+                                                        <Card>
+                                                            <Form.Item
+                                                                label="Choose modules"
+                                                                name="table"
+                                                            >
+                                                                <Select
+                                                                    value={formData.table || ''}
+                                                                    onChange={(value) =>
+                                                                        handleFormChange({
+                                                                            target: { name: 'table', value },
+                                                                        })
+                                                                    }
+                                                                >
+                                                                    <Option value="">Select modules</Option>
+                                                                    {modules.map((table, index) => (
+                                                                        displayNames[table.TABLE_NAME] ? (
+                                                                            <Option key={index} value={table.TABLE_NAME}>
+                                                                                {displayNames[table.TABLE_NAME]}
+                                                                            </Option>
+                                                                        ) : null
+                                                                    ))}
+                                                                </Select>
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label="Choose field"
+                                                                name="field"
+                                                            >
+                                                                <Select
+                                                                    value={formData.field || ''}
+                                                                    onChange={(value) =>
+                                                                        handleFormChange({
+                                                                            target: { name: 'field', value },
+                                                                        })
+                                                                    }
+                                                                >
+                                                                    <Option value="">Select field</Option>
+                                                                    {fields.map((field, index) => (
+                                                                        <Option key={index} value={field.COLUMN_NAME}>
+                                                                            {field.COLUMN_NAME}
+                                                                        </Option>
+                                                                    ))}
+                                                                </Select>
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label="Minimum Value"
+                                                                name="minvalue"
+                                                            >
+                                                                <Input
+                                                                    value={formData.minvalue || ''}
+                                                                    onChange={(e) =>
+                                                                        handleFormChange({
+                                                                            target: { name: 'minvalue', value: e.target.value },
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label="Maximum Value"
+                                                                name="maxvalue"
+                                                            >
+                                                                <Input
+                                                                    value={formData.maxvalue || ''}
+                                                                    onChange={(e) =>
+                                                                        handleFormChange({
+                                                                            target: { name: 'maxvalue', value: e.target.value },
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </Form.Item>
+                                                        </Card>
+                                                    )}
+
+                                                    {actionNode && (
+                                                        <Form.Item>
+                                                            <Checkbox
+                                                                name="opennextaction"
+                                                                checked={formData.opennextaction || false}
+                                                                onChange={(e) =>
+                                                                    handleFormChange({
+                                                                        target: {
+                                                                            name: 'opennextaction',
+                                                                            value: e.target.checked,
+                                                                        },
+                                                                    })
+                                                                }
+                                                            >
+                                                                Add Next Action
+                                                            </Checkbox>
+                                                        </Form.Item>
+                                                    )}
+
+                                                    {formData.opennextaction && (
+                                                        <>
+                                                            <Form.Item
+                                                                label="Next Action"
+                                                                name="nextAction"
+                                                            >
+                                                                <Select
+                                                                    value={formData.nextAction || ''}
+                                                                    onChange={(value) =>
+                                                                        handleFormChange({
+                                                                            target: { name: 'nextAction', value },
+                                                                        })
+                                                                    }
+                                                                >
+                                                                    <Option value="">Select State</Option>
+                                                                    <Option value="approval_sent_stage">Add Approval stage</Option>
+                                                                    <Option value="send_email_stage">Add Communication Email</Option>
+                                                                </Select>
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label="Approval send to"
+                                                                name="sendto"
+                                                            >
+                                                                <Input
+                                                                    value={formData.sendto || ''}
+                                                                    onChange={(e) =>
+                                                                        handleFormChange({
+                                                                            target: { name: 'sendto', value: e.target.value },
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </Form.Item>
+                                                        </>
+                                                    )}
+
+                                                    <div className="workflow-title text-center">
+                                                        <Button
+                                                            type="primary"
+                                                            htmlType="submit"
+                                                            className="mt-2"
+                                                            style={{ width: '100%' }}
+                                                        >
+                                                            Save
+                                                        </Button>
+                                                    </div>
+                                                </Form>
+                                            </div>
+                                        )}
+                                    </Card>
+                                </Col>
+
+                                <Col xs={24} md={16}>
+                                    <Card className="h-100">
+                                        <div className="workflow-editor">
+                                            <div style={{ height: 600 }}>
+                                                <ReactFlowProvider>
+                                                    <ReactFlow
+                                                        nodes={nodes}
+                                                        edges={edges}
+                                                        onNodesChange={onNodesChange}
+                                                        onEdgesChange={onEdgesChange}
+                                                        onConnect={onConnect}
+                                                        nodeTypes={nodeTypes}
+                                                        onNodeClick={handleNodeClick}
+                                                        onEdgeClick={onEdgeClick}
+                                                        onConnectEnd={onConnectEnd}
+                                                        onPaneClick={handlePaneClick}
+                                                    >
+                                                        <Background variant="dots" gap={12} size={1} />
+                                                        <Controls />
+                                                    </ReactFlow>
+                                                </ReactFlowProvider>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </Col>
+                            </Row>
+                        </main>
                     </div>
+                    <Footer />
                 </div>
             </div>
-            <a href="#top" id="back-to-top">
-                <i className="fa fa-angle-up" />
-            </a>
         </div>
     );
-}
+};
+
 export default WorkFlow;
