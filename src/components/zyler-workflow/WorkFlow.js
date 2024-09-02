@@ -39,7 +39,6 @@ const WorkFlow = () => {
     const [actionNode, setActionNode] = useState(false);
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
-    const [formKey, setFormKey] = useState(0);
     const undoStack = useRef([]);
     const redoStack = useRef([]);
 
@@ -138,7 +137,7 @@ const WorkFlow = () => {
     useEffect(() => {
         const fetchWorkflowRules = async () => {
             try {
-                const Token = Cookies.get('accessToken');
+                const Token = sessionStorage.getItem("uid");
                 const response = await fetch(`${apiUrl}/api/worflow_rule/getworkflowrules`, {
                     method: 'POST',
                     headers: {
@@ -167,7 +166,7 @@ const WorkFlow = () => {
 
     const saveWorkflowRules = useCallback(async () => {
         try {
-            const Token = Cookies.get('accessToken');
+            const Token = sessionStorage.getItem("uid");
             const response = await fetch(`${apiUrl}/api/worflow_rule/saveworkflowrules`, {
                 method: 'POST',
                 headers: {
@@ -190,7 +189,7 @@ const WorkFlow = () => {
     useEffect(() => {
         const fetchModules = async () => {
             try {
-                const Token = Cookies.get('accessToken');
+                const Token = sessionStorage.getItem("uid");
                 const response = await fetch(`${apiUrl}/api/worflow_rule/get_modules`, {
                     method: 'POST',
                     headers: {
@@ -213,7 +212,7 @@ const WorkFlow = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const Token = Cookies.get('accessToken');
+                const Token = sessionStorage.getItem("uid");
                 const response = await fetch(`${apiUrl}/api/worflow_rule/get_product`, {
                     method: 'POST',
                     headers: {
@@ -237,7 +236,7 @@ const WorkFlow = () => {
         const fetchFields = async () => {
             if (selectedModule) {
                 try {
-                    const Token = Cookies.get('accessToken');
+                    const Token = sessionStorage.getItem("uid");
                     const response = await fetch(`${apiUrl}/api/worflow_rule/get_fields`, {
                         method: 'POST',
                         headers: {
@@ -263,16 +262,17 @@ const WorkFlow = () => {
         const newValue = type === 'checkbox' ? checked : value;
         const newFormData = { ...formData, [name]: newValue };
 
+        console.log('newFormData', newFormData);
+
+
         let label = '';
         if (name === 'state') {
             switch (newValue) {
                 case 'start':
                     label = 'Start';
-                    setActionNode(false);
                     break;
                 case 'conditioncheck':
                     label = 'Condition';
-                    setActionNode(false);
                     break;
                 case 'action':
                     label = 'Action';
@@ -280,7 +280,6 @@ const WorkFlow = () => {
                     break;
                 case 'end':
                     label = 'End';
-                    setActionNode(false);
                     break;
                 default:
                     label = '';
@@ -337,24 +336,13 @@ const WorkFlow = () => {
         saveWorkflowRules();
     }, [formData, selectedNode, showCondition, saveWorkflowRules]);
 
- 
     const handleNodeClick = useCallback((_, node) => {
-        if(node.data.label==="action")
-        {
-            setActionNode(true)
-        }
-        else
-        {
-            setActionNode(false)
-        }
-        
         setSelectedNode(node.id);
         setFormVisible(true);
         setShowCondition(node.type === 'diamond');
         const nodeData = getNodeValueById(node.id);
         setFormData(nodeData || {});
         setSelectedModule(nodeData?.table || null);
-        setFormKey(prevKey => prevKey + 1); 
     }, [ruledata]);
 
     const getNodeValueById = useCallback(id => ruledata.find(node => node[id])?.[id] || {}, [ruledata]);
@@ -414,7 +402,7 @@ const WorkFlow = () => {
     // console.log('fomdata', formData);
 
     useEffect(() => {
-        console.log('Form Data Updated', formData);
+        console.log('Form Data Updated:', formData);
     }, [formData]);
 
 
@@ -467,7 +455,7 @@ const WorkFlow = () => {
                                                     // onFinish={handleFormSubmit}
                                                     // layout="vertical"
                                                     // className="mt-3"
-                                                    key={formKey} 
+
                                                     initialValues={formData}  // Set initial form values
                                                     onFinish={handleFormSubmit}
                                                     layout="vertical"

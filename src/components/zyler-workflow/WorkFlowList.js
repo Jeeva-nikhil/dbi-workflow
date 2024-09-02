@@ -26,7 +26,7 @@ const WorkFlowList = () => {
     const [products, setProducts] = useState([]);
     const [form] = Form.useForm();
 
-    const Token = Cookies.get('accessToken');
+    const Token = sessionStorage.getItem("uid");
     console.log('Token', Token);
 
     if (Token == null) {
@@ -64,7 +64,7 @@ const WorkFlowList = () => {
     };
 
     const getWorkflow = async () => {
-        const Token = Cookies.get('accessToken');
+        const Token = sessionStorage.getItem("uid");
         const getFieldsUrl = `${apiUrl}/api/worflow_rule/getworkflowlist`;
         try {
             const response = await fetch(getFieldsUrl, {
@@ -91,7 +91,7 @@ const WorkFlowList = () => {
     };
 
     const saveWorkflow = async (workflow_data) => {
-        const Token = Cookies.get('accessToken');
+        const Token = sessionStorage.getItem("uid");
         const saveWorkflowUrl = `${apiUrl}/api/worflow_rule/savewrokflow`;
         try {
             const response = await fetch(saveWorkflowUrl, {
@@ -125,7 +125,7 @@ const WorkFlowList = () => {
     };
 
     const deleteWorkflow = async (id) => {
-        const Token = Cookies.get('accessToken');
+        const Token = sessionStorage.getItem("uid");
         const deleteUrl = `${apiUrl}/api/worflow_rule/deleteworkflow/${id}`;
         try {
             const response = await fetch(deleteUrl, {
@@ -198,7 +198,7 @@ const WorkFlowList = () => {
             key: 'action',
             render: (_, record) => (
                 <div className="flex space-x-2">
-                    <Link to={`/workflow/${record.wf_id}`}>
+                    <Link to={`/zylerworkflowl/${record.wf_id}`}>
                         <EyeOutlined className="text-blue-500" />
                     </Link>
                     <DeleteOutlined
